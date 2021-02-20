@@ -28,3 +28,6 @@ engine over any other larger one like the ones mentioned earlier. There are plan
 So yea, this is essentially a passion project that probably won't go anywhere but I'll be damned if I don't have fun doing it. Trello below:
 **https://trello.com/b/vvZexWXX/viper-engine-framework**
 
+
+***BTW, there's this guy who's a massive fan who thinks I steal his code, you can go meme him, this is his github: https://github.com/GleemingKnight***
+
