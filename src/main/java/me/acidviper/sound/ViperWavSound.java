@@ -10,11 +10,19 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 
 public class ViperWavSound {
-    @Getter private Clip soundClip;
+    @Getter private final Clip soundClip;
+    @Getter private boolean fallOfSound;
+    @Getter private Point loc;
+    @Getter private int fallOfDistance;
+    @Getter private float volume;
 
-    public ViperWavSound(Clip clip, Point loc, int fallOfDistance) {
+    public ViperWavSound(Clip clip, Point loc, int fallOfDistance, float volume) {
         this.soundClip = clip;
-        ((FloatControl) soundClip.getControl(FloatControl.Type.MASTER_GAIN)).setValue();
+
+        this.fallOfSound = true;
+        this.loc = loc;
+        this.fallOfDistance = fallOfDistance;
+        this.volume = volume;
     }
 
     public ViperWavSound(Clip clip, float volume) {

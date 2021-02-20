@@ -5,6 +5,9 @@ import me.acidviper.camera.ViperCamera;
 import me.acidviper.input.ViperInput;
 import me.acidviper.resource.Resource;
 import me.acidviper.resource.type.ImageResource;
+import me.acidviper.resource.type.OvalResource;
+import me.acidviper.resource.type.RectangleResource;
+import me.acidviper.resource.type.TextResource;
 import me.acidviper.util.math.Rectangle;
 
 import java.awt.*;
@@ -65,11 +68,27 @@ public abstract class ViperScene extends Frame {
         for (Resource r : update(new ArrayList<Resource>())) {
             if (r == null) break;
             Rectangle rec = new Rectangle(ViperCamera.getCurrentCamera().getX(), ViperCamera.getCurrentCamera().getY(), ViperCamera.getCurrentCamera().getWidth(), ViperCamera.getCurrentCamera().getHeight());
-            if (r.getResourceType() == Resource.ResourceType.IMAGE) {
-                ImageResource s = (ImageResource) r;
-                if(s.getX() + s.getImage().getWidth() >= rec.getX() && rec.getX() + rec.getWidth() >= s.getX() - s.getImage().getWidth() && s.getY() + s.getImage().getHeight() >= rec.getY() && rec.getY() + rec.getHeight() >= s.getY()) {
-                    g.drawImage(s.getImage(), s.getX(), s.getY(), null);
-                }
+
+            switch (r.getResourceType()) {
+                case IMAGE:
+                    ImageResource a = (ImageResource) r;
+                    if(a.getX() + a.getImage().getWidth() >= rec.getX() && rec.getX() + rec.getWidth() >= a.getX() - a.getImage().getWidth() && a.getY() + a.getImage().getHeight() >= rec.getY() && rec.getY() + rec.getHeight() >= a.getY()) {
+                        g.drawImage(a.getImage(), a.getX(), a.getY(), null);
+                    }
+                    break;
+                case TEXT:
+                    TextResource b = (TextResource) r;
+                    g.setFont(g.getFont().deriveFont((float) b.getSize()));
+                    g.drawString(b.getText(), b.getX(), b.getY());
+                    break;
+                case RECTANGLE:
+                    RectangleResource c = (RectangleResource) r;
+                    g.drawRect(c.getX(), c.getY(), c.getWidth(), c.getHeight());
+                    break;
+                case OVAL:
+                    OvalResource d = (OvalResource) r;
+                    g.drawOval(d.getX(), d.getY(), d.getWidth(), d.getHeight());
+                    break;
             }
         }
     }

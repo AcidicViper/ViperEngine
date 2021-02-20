@@ -14,8 +14,8 @@ public class ViperCamera {
     @Getter private final int width;
     @Getter private final int height;
 
-    @Getter private final int x;
-    @Getter private final int y;
+    @Getter @Setter private int x;
+    @Getter @Setter private int y;
 
     public ViperCamera(int width, int height, int x, int y) {
         this.width = width;

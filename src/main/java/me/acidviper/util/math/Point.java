@@ -1,11 +1,12 @@
 package me.acidviper.util.math;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class Point {
 
-    @Getter private final int x;
-    @Getter private final int y;
+    @Getter @Setter private int x;
+    @Getter @Setter private int y;
 
     public Point(int x, int y) {
         this.x = x;

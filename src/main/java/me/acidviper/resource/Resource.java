@@ -14,5 +14,5 @@ public class Resource {
         this.y = y;
     }
 
-    public enum ResourceType { IMAGE }
+    public enum ResourceType { IMAGE, TEXT, RECTANGLE, OVAL }
 }

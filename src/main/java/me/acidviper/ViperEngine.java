@@ -2,6 +2,7 @@ package me.acidviper;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.acidviper.animation.ViperAnimationManager;
 import me.acidviper.input.ViperInput;
 import me.acidviper.loader.AssetLoader;
 import me.acidviper.scene.ViperScene;
@@ -31,6 +32,7 @@ public class ViperEngine {
     public void init() {
         new AssetLoader();
         new ViperInput();
+        new ViperAnimationManager();
     }
 
 }
