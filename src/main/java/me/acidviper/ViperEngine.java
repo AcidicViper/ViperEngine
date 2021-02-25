@@ -14,7 +14,6 @@ public class ViperEngine {
 
     @Getter @Setter private ViperScene currentScene;
 
-
     @Getter private final Dimension dimensions;
     @Getter private final Preferences prefs;
     @Getter private final String title;

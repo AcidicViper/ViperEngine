@@ -28,13 +28,15 @@ public class Rectangle {
 
     public boolean intersects(Rectangle rec) {
         if (x >= rec.getX() + rec.getWidth() || rec.getX() >= x + width) return false;
-        return y > rec.getY() + rec.getHeight() && rec.getY() > y + height;
+        if (y > rec.getY() + rec.getHeight() || rec.getY() > y + height) return false;
+        return true;
     }
 
     public boolean intersects(int x, int y, int width, int height) {
         Rectangle rec = new Rectangle(x, y, width, height);
 
         if (x >= rec.getX() + rec.getWidth() || rec.getX() >= x + width) return false;
-        return y > rec.getY() + rec.getHeight() && rec.getY() > y + height;
+        if (y > rec.getY() + rec.getHeight() || rec.getY() > y + height) return false;
+        return true;
     }
 }

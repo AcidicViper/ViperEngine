@@ -1,29 +1,32 @@
 package me.acidviper.scene;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.acidviper.ViperEngine;
 import me.acidviper.camera.ViperCamera;
 import me.acidviper.input.ViperInput;
 import me.acidviper.light.ViperLight;
-import me.acidviper.light.type.CircleLight;
 import me.acidviper.resource.Resource;
 import me.acidviper.resource.type.ImageResource;
 import me.acidviper.resource.type.OvalResource;
 import me.acidviper.resource.type.RectangleResource;
 import me.acidviper.resource.type.TextResource;
-import me.acidviper.util.math.Point;
 import me.acidviper.util.math.Rectangle;
-
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public abstract class ViperScene extends Frame {
+
+    @Getter private boolean running = false;
+    @Getter private int fps;
+
     private Image doubleBuffer;
+
+    private long tick;
+    private int tempFPS;
 
     public ViperScene() {
         if (ViperEngine.getInstance() == null) {
@@ -44,35 +47,80 @@ public abstract class ViperScene extends Frame {
             }
         });
 
-        /* Temporary way of calling update, will have to make a way that actually isn't set and involves FPS,
-        this could run before previous run calls finish */
-        new Timer().schedule(new TimerTask() {
-            public void run() {
-                repaint();
-            }
-        }, 0, 17);
-
         setVisible(true);
     }
 
-    public abstract ArrayList<Resource> update(ArrayList<Resource> drawResources);
+    public void setRunning(boolean run) {
+        if (running) {
+            running = false;
+            return;
+        }
+
+        running = true;
+        init();
+    }
+
+    public void init() {
+        double accumulator = 0;
+        long currentTime, lastUpdate = System.currentTimeMillis();
+        long nextFPSUpdate = System.currentTimeMillis() + 1000;
+        double tickRate = 1.0d / 60.0d;
+
+        while (running) {
+            currentTime = System.currentTimeMillis();
+            double lastRenderTimeInSeconds = (currentTime - lastUpdate) / 1000d;
+            accumulator += lastRenderTimeInSeconds;
+            lastUpdate = currentTime;
+
+            while (accumulator > tickRate) {
+                update();
+                tick++;
+                accumulator -= tickRate;
+            }
+
+            repaint();
+            tempFPS++;
+
+            if (System.currentTimeMillis() > nextFPSUpdate) {
+                System.out.println("FPS: " + tempFPS + " Ticks: " + tick);
+                fps = tempFPS;
+                tempFPS = 0;
+                tick = 0;
+                nextFPSUpdate = System.currentTimeMillis() + 1000;
+            }
+        }
+    }
+
+    public abstract void update();
+    public abstract ArrayList<Resource> render(ArrayList<Resource> toDraw);
 
     public void update(Graphics g) {
         Dimension size = getSize();
-        if (doubleBuffer == null || doubleBuffer.getWidth(this) != size.width || doubleBuffer.getHeight(this) != size.height)
+        if (doubleBuffer == null ||
+                doubleBuffer.getWidth(this) != size.width ||
+                doubleBuffer.getHeight(this) != size.height)
+        {
             doubleBuffer = createImage(size.width, size.height);
+        }
         if (doubleBuffer != null) {
+            // paint to double buffer
             Graphics g2 = doubleBuffer.getGraphics();
             paint(g2);
             g2.dispose();
+            // copy double buffer to screen
             g.drawImage(doubleBuffer, 0, 0, null);
-        } else paint(g);
+        }
+        else {
+            // couldn't create double buffer, just paint to screen
+            paint(g);
+        }
     }
 
     public void paint(Graphics g) {
-        List<ViperLight> lightsToRender = new ArrayList<ViperLight>();
+        if (!running) return;
 
-        for (Resource r : update(new ArrayList<Resource>())) {
+        List<ViperLight> lightsToRender = new ArrayList<ViperLight>();
+        for (Resource r : render(new ArrayList<Resource>())) {
             if (r == null) break;
             Rectangle rec = new Rectangle(ViperCamera.getCurrentCamera().getX(), ViperCamera.getCurrentCamera().getY(), ViperCamera.getCurrentCamera().getWidth(), ViperCamera.getCurrentCamera().getHeight());
 
@@ -103,19 +151,9 @@ public abstract class ViperScene extends Frame {
             }
         }
 
+        // TODO: Make the light system actually function
         if (lightsToRender.size() != 0) {
-            Graphics2D g2d = (Graphics2D) g;
-            for (ViperLight light : lightsToRender) {
-                if (light instanceof CircleLight)  {
-                    Point loc = new Point(light.getX(), light.getY());
-                    RadialGradientPaint p = new RadialGradientPaint(new Point2D.Float(loc.getX(), loc.getY()), ((CircleLight) light).getRadius(), light.getIntensity(), light.getColors());
-                    g2d.setPaint(p);
-                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .95f));
 
-                    g2d.fillRect(0, 0, (int) ((CircleLight) light).getRadius(), (int) ((CircleLight) light).getRadius());
-                    g2d.dispose();
-                }
-            }
         }
     }
 }
