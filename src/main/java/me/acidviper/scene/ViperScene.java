@@ -46,8 +46,6 @@ public abstract class ViperScene extends Frame {
                 System.exit(0);
             }
         });
-
-        setVisible(true);
     }
 
     public void setRunning(boolean run) {
@@ -55,6 +53,8 @@ public abstract class ViperScene extends Frame {
             running = false;
             return;
         }
+
+        setVisible(true);
 
         running = true;
         init();
